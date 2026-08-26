@@ -95,6 +95,10 @@ npm run pack:check
 - Full tool-call protocol support
 - More provider discovery sources
 
+## Examples
+
+See [examples/](examples/) for runnable demos.
+
 ## License
 
 MIT

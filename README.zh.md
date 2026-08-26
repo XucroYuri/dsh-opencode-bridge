@@ -103,3 +103,8 @@ npm run pack:check
 - 集成 DSH 主 Web UI
 - 完整 tool-call 协议支持
 - 更多模型发现来源
+
+
+## 示例
+
+参见 [examples/](examples/) 获取可运行示例。
