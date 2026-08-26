@@ -75,6 +75,17 @@ npm run smoke
 npm run pack:check
 ```
 
+## Configuration
+
+| Option | Default | Description |
+|---|---|---|
+| `--host` | `127.0.0.1` | Bind address |
+| `--port` | `4097` | Proxy port |
+| `--opencode-port` | `4096` | OpenCode server port |
+| `--timeout` | `60000` | OpenCode response timeout (ms) |
+| `--token` | empty | Bearer token for API auth |
+| `DSH_HOME` | `~/.dsh` | DSH home directory |
+
 ## License
 
 MIT

@@ -81,3 +81,15 @@ npm test
 npm run smoke
 npm run pack:check
 ```
+
+
+## 配置
+
+| 参数 | 默认值 | 说明 |
+|---|---|---|
+| `--host` | `127.0.0.1` | 绑定地址 |
+| `--port` | `4097` | Proxy 端口 |
+| `--opencode-port` | `4096` | OpenCode server 端口 |
+| `--timeout` | `60000` | OpenCode 响应超时（毫秒） |
+| `--token` | 空 | API Bearer Token |
+| `DSH_HOME` | `~/.dsh` | DSH 主目录 |
