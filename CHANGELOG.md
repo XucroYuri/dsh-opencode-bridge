@@ -13,6 +13,16 @@ All notable changes to this project will be documented in this file.
 - Bilingual docs
 - CI workflows
 
+
+- CORS support
+- Bearer token auth
+- Host binding option
+- Configurable timeout
+- Request body size limit
+- Health endpoint
+- Version endpoint
+- JSON status output
+- --version flag
 ## [0.2.0] - 2026-08-26
 
 - Native Cordis plugin implementation
