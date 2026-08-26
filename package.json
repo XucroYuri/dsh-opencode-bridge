@@ -51,7 +51,8 @@
   "scripts": {
     "prepublishOnly": "node --check src/index.js && for f in bin/*.js; do node --check \"$f\"; done",
     "test": "PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py' -v",
-    "check": "node --check src/index.js"
+    "check": "node --check src/index.js",
+    "pack:check": "npm pack --dry-run"
   },
   "sideEffects": false
 }
