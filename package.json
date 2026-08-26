@@ -20,7 +20,9 @@
     "CONTRIBUTING.zh.md",
     "SECURITY.md",
     "SECURITY.zh.md",
-    "LICENSE"
+    "LICENSE",
+    "AUTHORS.md",
+    "CODE_OF_CONDUCT.md"
   ],
   "license": "MIT",
   "keywords": [
