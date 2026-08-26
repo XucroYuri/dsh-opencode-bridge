@@ -22,6 +22,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
       - name: Check JS syntax
         run: node --check src/index.js
       - name: Check npm package contents
