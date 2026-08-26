@@ -1,7 +1,7 @@
 {
   "name": "@xucroyuri/dsh-opencode-bridge",
   "version": "0.1.1-experimental",
-  "description": "Experimental bridge to OpenCode as a model provider",
+  "description": "Experimental bridge to use OpenCode as a model provider from DeepSeek Harness.",
   "type": "module",
   "main": "src/index.js",
   "exports": {
@@ -13,5 +13,22 @@
     "README.md",
     "LICENSE"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "opencode",
+    "bridge",
+    "llm",
+    "experimental"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/XucroYuri/dsh-opencode-bridge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/XucroYuri/dsh-opencode-bridge/issues"
+  },
+  "homepage": "https://github.com/XucroYuri/dsh-opencode-bridge#readme",
+  "author": "XucroYuri"
 }

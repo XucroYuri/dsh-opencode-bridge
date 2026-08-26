@@ -1,34 +1,34 @@
 # dsh-opencode-bridge
 
-Experimental bridge to use OpenCode as a model provider from DeepSeek Harness.
+实验性桥接，让 DeepSeek Harness 可以将 OpenCode 作为模型供应商使用。
 
-> Status: Experimental
+> 状态：实验性
 
-## Features
+## 功能特性
 
-- Manage OpenCode headless server lifecycle
-- Ask OpenCode via HTTP API
-- Create session / switch model / send prompt
-- Experimental status command
-- Native Cordis command plugin
+- 管理 OpenCode headless server 生命周期
+- 通过 HTTP API 向 OpenCode 提问
+- 创建会话 / 切换模型 / 发送提示
+- 实验性状态命令
+- 原生 Cordis 命令插件
 
-## Requirements
+## 环境要求
 
 - DeepSeek Harness (DSH) 0.1.1+
-- OpenCode CLI (optional, for sync/catalog/bridge features)
+- OpenCode CLI（可选，用于 sync/catalog/bridge 功能）
 - Node.js 22+
-- Python 3.12+ (only for fallback CLI tests)
+- Python 3.12+（仅用于备用 CLI 测试）
 
-## Installation
+## 安装
 
-Add the plugin to your DSH profile:
+将插件添加到 DSH profile：
 
 ```bash
 cd ~/.dsh/profiles/tools
 npm install @xucroyuri/dsh-opencode-bridge
 ```
 
-Then add to `cordis.patch.yml`:
+然后在 `cordis.patch.yml` 中添加：
 
 ```yaml
 - insert:
@@ -36,7 +36,7 @@ Then add to `cordis.patch.yml`:
       name: '@xucroyuri/dsh-opencode-bridge'
 ```
 
-## Usage
+## 使用方法
 
 ```bash
 dsh --profile tools opencode-bridge status
@@ -44,13 +44,13 @@ dsh --profile tools opencode-bridge serve --port 4096
 dsh --profile tools opencode-bridge ask "hello" --model deepseek/deepseek-v4-pro
 ```
 
-## Development
+## 开发
 
 ```bash
 node --check src/index.js
 PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
-## License
+## 许可证
 
 MIT
