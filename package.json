@@ -23,7 +23,8 @@
     "LICENSE",
     "AUTHORS.md",
     "CODE_OF_CONDUCT.md",
-    "scripts"
+    "scripts",
+    "docs"
   ],
   "license": "MIT",
   "keywords": [
