@@ -33,5 +33,8 @@
   "author": "XucroYuri",
   "publishConfig": {
     "access": "public"
+  },
+  "bin": {
+    "dsh-opencode-bridge": "bin/dsh-opencode-bridge.js"
   }
 }
