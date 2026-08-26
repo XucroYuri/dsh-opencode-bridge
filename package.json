@@ -1,6 +1,6 @@
 {
   "name": "@xucroyuri/dsh-opencode-bridge",
-  "version": "0.1.1-experimental",
+  "version": "0.2.0-experimental",
   "description": "Experimental bridge to use OpenCode as a model provider from DeepSeek Harness.",
   "type": "module",
   "main": "src/index.js",
