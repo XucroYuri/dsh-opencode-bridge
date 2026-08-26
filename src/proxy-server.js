@@ -25,6 +25,7 @@ const authToken = argString('--token', '')
 const sessionPool = new Map()
 const sessionLastUsed = new Map()
 const MAX_SESSIONS = 20
+const MAX_BODY_SIZE = 10 * 1024 * 1024
 
 function dshHome() {
   return process.env.DSH_HOME || join(homedir(), '.dsh')
@@ -224,7 +225,14 @@ const server = createServer(async (req, res) => {
   }
   if (req.method === 'POST' && url.pathname === '/v1/chat/completions') {
     let body = ''
-    for await (const chunk of req) body += chunk
+    for await (const chunk of req) {
+      body += chunk
+      if (body.length > MAX_BODY_SIZE) {
+        res.writeHead(413, { 'content-type': 'application/json', ...corsHeaders() })
+        res.end(JSON.stringify({ error: 'payload too large' }))
+        return
+      }
+    }
     let payload
     try { payload = JSON.parse(body || '{}') } catch {
       res.writeHead(400, { 'content-type': 'application/json', ...corsHeaders() })
