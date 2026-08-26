@@ -234,26 +234,30 @@ export async function apply(ctx) {
 
     if (command === 'status') {
       const proc = spawnSync('opencode', ['--version'], { encoding: 'utf8', timeout: 10000 })
+      const json = args.includes('--json')
       if (proc.status !== 0) {
+        if (json) { console.log(JSON.stringify({ opencode: null, bridge: false, proxy: false })); finish(0); return }
         console.error('opencode: not found')
         finish(1); return
       }
-      console.log(`opencode: ${proc.stdout.trim()}`)
       const p = pidPath()
+      let bridgeRunning = false
       if (existsSync(p)) {
         const pid = Number(readFileSync(p, 'utf8').trim())
-        if (Number.isInteger(pid) && isRunning(pid)) console.log(`bridge: running (pid ${pid})`)
-        else console.log('bridge: pid file exists but process not running')
-      } else {
-        console.log('bridge: not running')
+        bridgeRunning = Number.isInteger(pid) && isRunning(pid)
       }
       const pp = proxyPidPath()
+      let proxyRunning = false
       if (existsSync(pp)) {
         const pid = Number(readFileSync(pp, 'utf8').trim())
-        if (Number.isInteger(pid) && isRunning(pid)) console.log(`proxy: running (pid ${pid})`)
-        else console.log('proxy: pid file exists but process not running')
+        proxyRunning = Number.isInteger(pid) && isRunning(pid)
+      }
+      if (json) {
+        console.log(JSON.stringify({ opencode: proc.stdout.trim(), bridge: bridgeRunning, proxy: proxyRunning }))
       } else {
-        console.log('proxy: not running')
+        console.log(`opencode: ${proc.stdout.trim()}`)
+        console.log(bridgeRunning ? `bridge: running (pid ${Number(readFileSync(p, 'utf8').trim())})` : 'bridge: not running')
+        console.log(proxyRunning ? `proxy: running (pid ${Number(readFileSync(pp, 'utf8').trim())})` : 'proxy: not running')
       }
       finish(0); return
     }
