@@ -168,7 +168,20 @@ function buildPrompt(messages, tools) {
   return parts.join('\n\n')
 }
 
+function corsHeaders() {
+  return {
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': 'GET,POST,OPTIONS',
+    'access-control-allow-headers': 'content-type',
+  }
+}
+
 const server = createServer(async (req, res) => {
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, corsHeaders())
+    res.end()
+    return
+  }
   const url = new URL(req.url, `http://127.0.0.1:${proxyPort}`)
   const started = Date.now()
   console.error(`[proxy] ${req.method} ${url.pathname}`)
@@ -176,7 +189,7 @@ const server = createServer(async (req, res) => {
     console.error(`[proxy] ${req.method} ${url.pathname} -> ${res.statusCode} (${Date.now() - started}ms)`)
   })
   if (req.method === 'GET' && url.pathname === '/health') {
-    res.writeHead(200, { 'content-type': 'application/json' })
+    res.writeHead(200, { 'content-type': 'application/json', ...corsHeaders() })
     res.end(JSON.stringify({ ok: true }))
     return
   }
@@ -190,10 +203,10 @@ const server = createServer(async (req, res) => {
         object: 'model',
         owned_by: m.providerID || 'opencode',
       }))
-      res.writeHead(200, { 'content-type': 'application/json' })
+      res.writeHead(200, { 'content-type': 'application/json', ...corsHeaders() })
       res.end(JSON.stringify({ object: 'list', data }))
     } catch (error) {
-      res.writeHead(502, { 'content-type': 'application/json' })
+      res.writeHead(502, { 'content-type': 'application/json', ...corsHeaders() })
       res.end(JSON.stringify({ error: { message: String(error?.message || error) } }))
     }
     return
@@ -203,7 +216,7 @@ const server = createServer(async (req, res) => {
     for await (const chunk of req) body += chunk
     let payload
     try { payload = JSON.parse(body || '{}') } catch {
-      res.writeHead(400, { 'content-type': 'application/json' })
+      res.writeHead(400, { 'content-type': 'application/json', ...corsHeaders() })
       res.end(JSON.stringify({ error: { message: 'invalid JSON' } }))
       return
     }
@@ -217,6 +230,7 @@ const server = createServer(async (req, res) => {
       if (stream) {
         res.writeHead(200, {
           'content-type': 'text/event-stream',
+          ...corsHeaders(),
           'cache-control': 'no-cache',
           connection: 'keep-alive',
         })
@@ -246,16 +260,16 @@ const server = createServer(async (req, res) => {
           choices: [{ index: 0, message: { role: 'assistant', content: text }, finish_reason: 'stop' }],
           usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
         }
-        res.writeHead(200, { 'content-type': 'application/json' })
+        res.writeHead(200, { 'content-type': 'application/json', ...corsHeaders() })
         res.end(JSON.stringify(result))
       }
     } catch (error) {
-      res.writeHead(502, { 'content-type': 'application/json' })
+      res.writeHead(502, { 'content-type': 'application/json', ...corsHeaders() })
       res.end(JSON.stringify({ error: { message: String(error?.message || error) } }))
     }
     return
   }
-  res.writeHead(404, { 'content-type': 'application/json' })
+  res.writeHead(404, { 'content-type': 'application/json', ...corsHeaders() })
   res.end(JSON.stringify({ error: { message: 'not found' } }))
 })
 
