@@ -1,6 +1,6 @@
 {
   "name": "@xucroyuri/dsh-opencode-bridge",
-  "version": "0.1.0-experimental",
+  "version": "0.1.1-experimental",
   "description": "Experimental bridge to OpenCode as a model provider",
   "type": "module",
   "main": "src/index.js",
