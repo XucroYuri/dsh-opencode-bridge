@@ -12,9 +12,14 @@ function argValue(name, fallback) {
   const i = args.indexOf(name)
   return i >= 0 && args[i+1] ? Number(args[i+1]) : fallback
 }
+function argString(name, fallback) {
+  const i = args.indexOf(name)
+  return i >= 0 && args[i+1] ? args[i+1] : fallback
+}
 const proxyPort = argValue('--port', 4097)
 const opencodePort = argValue('--opencode-port', 4096)
 const timeoutMs = argValue('--timeout', 60000)
+const host = argString('--host', '127.0.0.1')
 
 const sessionPool = new Map()
 const sessionLastUsed = new Map()
@@ -273,7 +278,7 @@ const server = createServer(async (req, res) => {
   res.end(JSON.stringify({ error: { message: 'not found' } }))
 })
 
-server.listen(proxyPort, '127.0.0.1', () => {
+server.listen(proxyPort, host, () => {
   console.log(`proxy listening on http://127.0.0.1:${proxyPort}/v1`)
   console.log(`opencode server port: ${opencodePort}`)
 })
