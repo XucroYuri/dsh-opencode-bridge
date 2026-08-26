@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Smoke test version check
+
 - Native Cordis plugin
 - OpenAI-compatible proxy
 - Session reuse
