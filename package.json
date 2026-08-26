@@ -9,8 +9,16 @@
   },
   "files": [
     "src",
+    "bin",
+    "examples",
     "specs",
     "README.md",
+    "README.zh.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CONTRIBUTING.zh.md",
+    "SECURITY.md",
+    "SECURITY.zh.md",
     "LICENSE"
   ],
   "license": "MIT",
