@@ -148,6 +148,11 @@ function buildPrompt(messages, tools) {
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${proxyPort}`)
+  const started = Date.now()
+  console.error(`[proxy] ${req.method} ${url.pathname}`)
+  res.on('finish', () => {
+    console.error(`[proxy] ${req.method} ${url.pathname} -> ${res.statusCode} (${Date.now() - started}ms)`)
+  })
   if (req.method === 'GET' && url.pathname === '/v1/models') {
     try {
       if (!(await ensureOpenCodeServer(opencodePort))) throw new Error('cannot start OpenCode server')
