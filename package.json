@@ -43,7 +43,8 @@
   "homepage": "https://github.com/XucroYuri/dsh-opencode-bridge#readme",
   "author": "XucroYuri",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "tag": "next"
   },
   "bin": {
     "dsh-opencode-bridge": "bin/dsh-opencode-bridge.js"
