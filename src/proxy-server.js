@@ -200,6 +200,11 @@ const server = createServer(async (req, res) => {
   res.on('finish', () => {
     console.error(`[proxy] ${req.method} ${url.pathname} -> ${res.statusCode} (${Date.now() - started}ms)`)
   })
+  if (req.method === 'GET' && url.pathname === '/version') {
+    res.writeHead(200, { 'content-type': 'application/json', ...corsHeaders() })
+    res.end(JSON.stringify({ name: 'dsh-opencode-bridge', version: '0.3.0-experimental' }))
+    return
+  }
   if (req.method === 'GET' && url.pathname === '/health') {
     res.writeHead(200, { 'content-type': 'application/json', ...corsHeaders() })
     res.end(JSON.stringify({ ok: true }))
