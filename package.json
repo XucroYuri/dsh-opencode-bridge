@@ -39,5 +39,8 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "scripts": {
+    "prepublishOnly": "node --check src/index.js && for f in bin/*.js; do node --check \"$f\"; done"
   }
 }
