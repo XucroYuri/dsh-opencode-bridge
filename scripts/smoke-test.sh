@@ -27,4 +27,11 @@ for p in dsh-opencode-sync dsh-provider-catalog dsh-model-manager dsh-llm-oauth-
   echo "OK: $p tests"
 done
 
+echo "==> Checking --version"
+for f in "$ROOT"/*/bin/*.js; do
+  [ -e "$f" ] || continue
+  node "$f" --version >/dev/null || { echo "FAIL: $f --version"; exit 1; }
+done
+echo "OK: --version"
+
 echo "==> All smoke tests passed"
