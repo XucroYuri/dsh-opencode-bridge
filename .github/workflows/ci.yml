@@ -16,7 +16,7 @@ jobs:
         run: node --check src/index.js
       - name: Check npm package contents
         run: npm run pack:check
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install Python deps
