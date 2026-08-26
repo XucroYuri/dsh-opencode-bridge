@@ -108,3 +108,8 @@ npm run pack:check
 ## 示例
 
 参见 [examples/](examples/) 获取可运行示例。
+
+
+## 支持
+
+如果你觉得这个项目有用，欢迎 [赞助](https://github.com/sponsors/XucroYuri)。
