@@ -120,3 +120,11 @@ npm run pack:check
 ## 支持
 
 如果你觉得这个项目有用，欢迎 [赞助](https://github.com/sponsors/XucroYuri)。
+
+
+## API
+
+- `GET /version`
+- `GET /health`
+- `GET /v1/models`
+- `POST /v1/chat/completions`

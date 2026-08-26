@@ -110,6 +110,13 @@ See [examples/](examples/) for runnable demos.
 
 If you find this project useful, consider [sponsoring](https://github.com/sponsors/XucroYuri).
 
+## API
+
+- `GET /version`
+- `GET /health`
+- `GET /v1/models`
+- `POST /v1/chat/completions`
+
 ## License
 
 MIT
