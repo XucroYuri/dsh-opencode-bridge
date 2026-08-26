@@ -22,7 +22,8 @@
     "SECURITY.zh.md",
     "LICENSE",
     "AUTHORS.md",
-    "CODE_OF_CONDUCT.md"
+    "CODE_OF_CONDUCT.md",
+    "scripts"
   ],
   "license": "MIT",
   "keywords": [
