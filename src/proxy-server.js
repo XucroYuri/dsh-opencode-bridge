@@ -127,14 +127,23 @@ async function opencodeAsk(opencodePort, prompt, modelRef) {
   throw new Error('timed out waiting for OpenCode assistant response')
 }
 
-function buildPrompt(messages) {
-  return (messages || []).map(m => {
+function buildPrompt(messages, tools) {
+  const parts = (messages || []).map(m => {
     const role = m.role || 'user'
     let content = ''
     if (typeof m.content === 'string') content = m.content
     else if (Array.isArray(m.content)) content = m.content.map(c => c.type === 'text' ? c.text : '').filter(Boolean).join('\n')
     return `${role}: ${content}`
-  }).join('\n\n')
+  })
+  if (Array.isArray(tools) && tools.length > 0) {
+    const toolList = tools.map(t => {
+      const name = t.function?.name || t.name || 'unknown'
+      const desc = t.function?.description || t.description || ''
+      return `- ${name}: ${desc}`
+    }).join('\n')
+    parts.push(`Available tools:\n${toolList}`)
+  }
+  return parts.join('\n\n')
 }
 
 const server = createServer(async (req, res) => {
@@ -169,7 +178,7 @@ const server = createServer(async (req, res) => {
     const model = payload.model || 'opencode/x-preview-f-free'
     const messages = payload.messages || []
     const stream = payload.stream === true
-    const prompt = buildPrompt(messages)
+    const prompt = buildPrompt(messages, payload.tools)
     try {
       if (!(await ensureOpenCodeServer(opencodePort))) throw new Error('cannot start OpenCode server')
       const text = await opencodeAsk(opencodePort, prompt, model)
