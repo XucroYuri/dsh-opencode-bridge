@@ -36,5 +36,8 @@
   },
   "bin": {
     "dsh-opencode-bridge": "bin/dsh-opencode-bridge.js"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
