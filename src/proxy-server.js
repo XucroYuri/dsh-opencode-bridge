@@ -20,6 +20,7 @@ const proxyPort = argValue('--port', 4097)
 const opencodePort = argValue('--opencode-port', 4096)
 const timeoutMs = argValue('--timeout', 60000)
 const host = argString('--host', '127.0.0.1')
+const authToken = argString('--token', '')
 
 const sessionPool = new Map()
 const sessionLastUsed = new Map()
@@ -185,6 +186,11 @@ const server = createServer(async (req, res) => {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, corsHeaders())
     res.end()
+    return
+  }
+  if (authToken && req.headers.authorization !== `Bearer ${authToken}`) {
+    res.writeHead(401, { 'content-type': 'application/json', ...corsHeaders() })
+    res.end(JSON.stringify({ error: 'unauthorized' }))
     return
   }
   const url = new URL(req.url, `http://127.0.0.1:${proxyPort}`)

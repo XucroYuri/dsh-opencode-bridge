@@ -16,7 +16,9 @@ if (command === 'proxy') {
   const timeoutArgs = timeoutIdx >= 0 && args[timeoutIdx+1] ? ['--timeout', args[timeoutIdx+1]] : []
   const hostIdx = args.indexOf('--host')
   const hostArgs = hostIdx >= 0 && args[hostIdx+1] ? ['--host', args[hostIdx+1]] : []
-  const child = spawn(process.execPath, [script, '--port', port, '--opencode-port', ocPort, ...timeoutArgs, ...hostArgs], {
+  const tokenIdx = args.indexOf('--token')
+  const tokenArgs = tokenIdx >= 0 && args[tokenIdx+1] ? ['--token', args[tokenIdx+1]] : []
+  const child = spawn(process.execPath, [script, '--port', port, '--opencode-port', ocPort, ...timeoutArgs, ...hostArgs, ...tokenArgs], {
     stdio: 'inherit',
   })
   child.on('exit', (code) => process.exit(code ?? 0))

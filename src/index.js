@@ -282,7 +282,9 @@ export async function apply(ctx) {
       const timeoutArgs = timeoutIdx >= 0 && args[timeoutIdx+1] ? ['--timeout', args[timeoutIdx+1]] : []
       const hostIdx = args.indexOf('--host')
       const hostArgs = hostIdx >= 0 && args[hostIdx+1] ? ['--host', args[hostIdx+1]] : []
-      const child = spawn(process.execPath, [script, '--port', String(proxyPort), '--opencode-port', String(opencodePort), ...timeoutArgs, ...hostArgs], {
+      const tokenIdx = args.indexOf('--token')
+      const tokenArgs = tokenIdx >= 0 && args[tokenIdx+1] ? ['--token', args[tokenIdx+1]] : []
+      const child = spawn(process.execPath, [script, '--port', String(proxyPort), '--opencode-port', String(opencodePort), ...timeoutArgs, ...hostArgs, ...tokenArgs], {
         detached: true,
         stdio: ['ignore', log, log],
       })
