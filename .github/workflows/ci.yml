@@ -23,3 +23,5 @@ jobs:
         run: pip install pyyaml
       - name: Run Python tests
         run: PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Run smoke test
+        run: npm run smoke
