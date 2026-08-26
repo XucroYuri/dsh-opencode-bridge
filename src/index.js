@@ -278,7 +278,9 @@ export async function apply(ctx) {
       const pp = proxyPidPath()
       mkdirSync(join(pp, '..'), { recursive: true })
       const log = openSync(logPath(), 'a')
-      const child = spawn(process.execPath, [script, '--port', String(proxyPort), '--opencode-port', String(opencodePort)], {
+      const timeoutIdx = args.indexOf('--timeout')
+      const timeoutArgs = timeoutIdx >= 0 && args[timeoutIdx+1] ? ['--timeout', args[timeoutIdx+1]] : []
+      const child = spawn(process.execPath, [script, '--port', String(proxyPort), '--opencode-port', String(opencodePort), ...timeoutArgs], {
         detached: true,
         stdio: ['ignore', log, log],
       })

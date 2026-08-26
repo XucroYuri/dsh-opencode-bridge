@@ -14,6 +14,7 @@ function argValue(name, fallback) {
 }
 const proxyPort = argValue('--port', 4097)
 const opencodePort = argValue('--opencode-port', 4096)
+const timeoutMs = argValue('--timeout', 60000)
 
 const sessionPool = new Map()
 const sessionLastUsed = new Map()
@@ -130,7 +131,7 @@ async function opencodeAsk(opencodePort, prompt, modelRef) {
   if (sent.status !== 200) throw new Error(`failed to send prompt: ${JSON.stringify(sent.data)}`)
   const userId = sent.data?.data?.id
   const userTime = sent.data?.data?.timeCreated ?? Date.now()
-  const deadline = Date.now() + 60000
+  const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
     const msgs = await awaitFetch(`${base}/api/session/${sessionId}/message?limit=30`)
     const list = msgs.data?.data ?? []

@@ -12,7 +12,9 @@ if (command === 'proxy') {
   const ocIdx = args.indexOf('--opencode-port')
   const ocPort = ocIdx >= 0 && args[ocIdx+1] ? args[ocIdx+1] : '4096'
   const script = fileURLToPath(new URL('../src/proxy-server.js', import.meta.url))
-  const child = spawn(process.execPath, [script, '--port', port, '--opencode-port', ocPort], {
+  const timeoutIdx = args.indexOf('--timeout')
+  const timeoutArgs = timeoutIdx >= 0 && args[timeoutIdx+1] ? ['--timeout', args[timeoutIdx+1]] : []
+  const child = spawn(process.execPath, [script, '--port', port, '--opencode-port', ocPort, ...timeoutArgs], {
     stdio: 'inherit',
   })
   child.on('exit', (code) => process.exit(code ?? 0))
