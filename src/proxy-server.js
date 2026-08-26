@@ -16,6 +16,8 @@ const proxyPort = argValue('--port', 4097)
 const opencodePort = argValue('--opencode-port', 4096)
 
 const sessionPool = new Map()
+const sessionLastUsed = new Map()
+const MAX_SESSIONS = 20
 
 function dshHome() {
   return process.env.DSH_HOME || join(homedir(), '.dsh')
@@ -75,7 +77,23 @@ async function awaitFetch(url, options) {
 
 async function getOrCreateSession(opencodePort, modelRef) {
   if (modelRef && sessionPool.has(modelRef)) {
+    sessionLastUsed.set(modelRef, Date.now())
     return sessionPool.get(modelRef)
+  }
+  // Evict the least-recently-used session when the pool is full.
+  if (sessionPool.size >= MAX_SESSIONS) {
+    let oldestKey = null
+    let oldestTime = Infinity
+    for (const [key, time] of sessionLastUsed) {
+      if (time < oldestTime) {
+        oldestTime = time
+        oldestKey = key
+      }
+    }
+    if (oldestKey) {
+      sessionPool.delete(oldestKey)
+      sessionLastUsed.delete(oldestKey)
+    }
   }
   const base = `http://127.0.0.1:${opencodePort}`
   const created = await awaitFetch(`${base}/api/session`, {
@@ -94,7 +112,10 @@ async function getOrCreateSession(opencodePort, modelRef) {
       })
     }
   }
-  if (modelRef) sessionPool.set(modelRef, sessionId)
+  if (modelRef) {
+    sessionPool.set(modelRef, sessionId)
+    sessionLastUsed.set(modelRef, Date.now())
+  }
   return sessionId
 }
 
