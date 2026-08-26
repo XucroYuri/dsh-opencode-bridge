@@ -139,6 +139,24 @@ function buildPrompt(messages) {
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${proxyPort}`)
+  if (req.method === 'GET' && url.pathname === '/v1/models') {
+    try {
+      if (!(await ensureOpenCodeServer(opencodePort))) throw new Error('cannot start OpenCode server')
+      const modelsRes = await awaitFetch(`http://127.0.0.1:${opencodePort}/api/model`)
+      const items = modelsRes.data?.data ?? []
+      const data = items.map(m => ({
+        id: `${m.providerID}/${m.id}`,
+        object: 'model',
+        owned_by: m.providerID || 'opencode',
+      }))
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ object: 'list', data }))
+    } catch (error) {
+      res.writeHead(502, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ error: { message: String(error?.message || error) } }))
+    }
+    return
+  }
   if (req.method === 'POST' && url.pathname === '/v1/chat/completions') {
     let body = ''
     for await (const chunk of req) body += chunk
