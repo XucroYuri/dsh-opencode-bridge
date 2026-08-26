@@ -17,6 +17,8 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: Check JS syntax
         run: node --check src/index.js
+      - name: Run smoke test
+        run: npm run smoke
       - name: Publish to npm
         if: env.NODE_AUTH_TOKEN != ''
         run: npm publish
