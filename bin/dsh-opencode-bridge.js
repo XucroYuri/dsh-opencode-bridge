@@ -2,6 +2,14 @@
 // Standalone CLI for dsh-opencode-bridge.
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
+import { readFileSync } from 'node:fs'
+
+if (process.argv[2] === '--version' || process.argv[2] === '-v') {
+  const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
+  console.log(pkg.version)
+  process.exit(0)
+}
+
 
 const args = process.argv.slice(2)
 const command = args[0] || 'help'
