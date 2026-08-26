@@ -15,6 +15,8 @@ function argValue(name, fallback) {
 const proxyPort = argValue('--port', 4097)
 const opencodePort = argValue('--opencode-port', 4096)
 
+const sessionPool = new Map()
+
 function dshHome() {
   return process.env.DSH_HOME || join(homedir(), '.dsh')
 }
@@ -71,7 +73,10 @@ async function awaitFetch(url, options) {
   return { status: res.status, data }
 }
 
-async function opencodeAsk(opencodePort, prompt, modelRef) {
+async function getOrCreateSession(opencodePort, modelRef) {
+  if (modelRef && sessionPool.has(modelRef)) {
+    return sessionPool.get(modelRef)
+  }
   const base = `http://127.0.0.1:${opencodePort}`
   const created = await awaitFetch(`${base}/api/session`, {
     method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({}),
@@ -89,6 +94,13 @@ async function opencodeAsk(opencodePort, prompt, modelRef) {
       })
     }
   }
+  if (modelRef) sessionPool.set(modelRef, sessionId)
+  return sessionId
+}
+
+async function opencodeAsk(opencodePort, prompt, modelRef) {
+  const base = `http://127.0.0.1:${opencodePort}`
+  const sessionId = await getOrCreateSession(opencodePort, modelRef)
   console.error(`[proxy] session=${sessionId} model=${modelRef} prompt=${JSON.stringify(prompt).slice(0,100)}`)
   const sent = await awaitFetch(`${base}/api/session/${sessionId}/prompt`, {
     method: 'POST', headers: { 'content-type': 'application/json' },
@@ -149,12 +161,23 @@ const server = createServer(async (req, res) => {
           'cache-control': 'no-cache',
           connection: 'keep-alive',
         })
-        const chunk = {
-          id: `chatcmpl-${Date.now()}`, object: 'chat.completion.chunk',
-          created: Math.floor(Date.now() / 1000), model,
-          choices: [{ index: 0, delta: { role: 'assistant', content: text }, finish_reason: 'stop' }],
+        const id = `chatcmpl-${Date.now()}`
+        const created = Math.floor(Date.now() / 1000)
+        // Emit the text in small deltas so streaming clients see incremental output.
+        const pieces = text.match(/.{1,8}/gs) || [text]
+        for (const piece of pieces) {
+          const chunk = {
+            id, object: 'chat.completion.chunk', created, model,
+            choices: [{ index: 0, delta: { content: piece }, finish_reason: null }],
+          }
+          res.write(`data: ${JSON.stringify(chunk)}\n\n`)
+          await new Promise(r => setTimeout(r, 10))
         }
-        res.write(`data: ${JSON.stringify(chunk)}\n\n`)
+        const done = {
+          id, object: 'chat.completion.chunk', created, model,
+          choices: [{ index: 0, delta: {}, finish_reason: 'stop' }],
+        }
+        res.write(`data: ${JSON.stringify(done)}\n\n`)
         res.write('data: [DONE]\n\n')
         res.end()
       } else {
