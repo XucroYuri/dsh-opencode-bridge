@@ -56,3 +56,12 @@ PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py' -v
 ## 许可证
 
 MIT
+
+
+## 相关插件
+
+- [dsh-opencode-sync](https://github.com/XucroYuri/dsh-opencode-sync)
+- [dsh-provider-catalog](https://github.com/XucroYuri/dsh-provider-catalog)
+- [dsh-model-manager](https://github.com/XucroYuri/dsh-model-manager)
+- [dsh-llm-oauth-ui](https://github.com/XucroYuri/dsh-llm-oauth-ui)
+- [dsh-opencode-bridge](https://github.com/XucroYuri/dsh-opencode-bridge)
