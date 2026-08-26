@@ -153,6 +153,11 @@ const server = createServer(async (req, res) => {
   res.on('finish', () => {
     console.error(`[proxy] ${req.method} ${url.pathname} -> ${res.statusCode} (${Date.now() - started}ms)`)
   })
+  if (req.method === 'GET' && url.pathname === '/health') {
+    res.writeHead(200, { 'content-type': 'application/json' })
+    res.end(JSON.stringify({ ok: true }))
+    return
+  }
   if (req.method === 'GET' && url.pathname === '/v1/models') {
     try {
       if (!(await ensureOpenCodeServer(opencodePort))) throw new Error('cannot start OpenCode server')
