@@ -67,6 +67,14 @@ PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py' -v
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [SECURITY.md](SECURITY.md)
 
+## Testing
+
+```bash
+npm test
+npm run smoke
+npm run pack:check
+```
+
 ## License
 
 MIT

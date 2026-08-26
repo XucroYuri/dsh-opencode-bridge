@@ -72,3 +72,12 @@ MIT
 - [CHANGELOG.md](CHANGELOG.md)
 - [CONTRIBUTING.zh.md](CONTRIBUTING.zh.md)
 - [SECURITY.zh.md](SECURITY.zh.md)
+
+
+## 测试
+
+```bash
+npm test
+npm run smoke
+npm run pack:check
+```
