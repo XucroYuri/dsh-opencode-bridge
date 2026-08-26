@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- Full LlmAdapter integration for dsh-opencode-bridge
-- Interactive OAuth Web UI for dsh-llm-oauth-ui
-- npm publishing automation
+- Native Cordis plugin
+- OpenAI-compatible proxy
+- Session reuse
+- Incremental SSE streaming
+- Windows-native OpenCode server startup
+- End-to-end DSH model call verified
+- Bilingual docs
+- CI workflows
 
 ## [0.2.0] - 2026-08-26
 

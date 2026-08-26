@@ -30,5 +30,8 @@
     "url": "https://github.com/XucroYuri/dsh-opencode-bridge/issues"
   },
   "homepage": "https://github.com/XucroYuri/dsh-opencode-bridge#readme",
-  "author": "XucroYuri"
+  "author": "XucroYuri",
+  "publishConfig": {
+    "access": "public"
+  }
 }
