@@ -1,5 +1,7 @@
 # dsh-opencode-bridge
 
+![CI](https://github.com/XucroYuri/dsh-opencode-bridge/actions/workflows/ci.yml/badge.svg) ![License](https://img.shields.io/github/license/XucroYuri/dsh-opencode-bridge)
+
 Experimental bridge to use OpenCode as a model provider from DeepSeek Harness.
 
 > Status: Experimental
