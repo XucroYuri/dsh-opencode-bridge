@@ -61,6 +61,12 @@ PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py' -v
 - [dsh-llm-oauth-ui](https://github.com/XucroYuri/dsh-llm-oauth-ui)
 - [dsh-opencode-bridge](https://github.com/XucroYuri/dsh-opencode-bridge)
 
+## Documentation
+
+- [CHANGELOG.md](CHANGELOG.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [SECURITY.md](SECURITY.md)
+
 ## License
 
 MIT

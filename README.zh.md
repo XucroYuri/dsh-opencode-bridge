@@ -65,3 +65,10 @@ MIT
 - [dsh-model-manager](https://github.com/XucroYuri/dsh-model-manager)
 - [dsh-llm-oauth-ui](https://github.com/XucroYuri/dsh-llm-oauth-ui)
 - [dsh-opencode-bridge](https://github.com/XucroYuri/dsh-opencode-bridge)
+
+
+## 文档
+
+- [CHANGELOG.md](CHANGELOG.md)
+- [CONTRIBUTING.zh.md](CONTRIBUTING.zh.md)
+- [SECURITY.zh.md](SECURITY.zh.md)
