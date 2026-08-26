@@ -88,6 +88,13 @@ npm run pack:check
 | `--token` | empty | Bearer token for API auth |
 | `DSH_HOME` | `~/.dsh` | DSH home directory |
 
+## Roadmap
+
+- Publish to npm
+- Integrate with DSH main Web UI
+- Full tool-call protocol support
+- More provider discovery sources
+
 ## License
 
 MIT

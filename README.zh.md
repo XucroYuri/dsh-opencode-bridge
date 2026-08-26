@@ -95,3 +95,11 @@ npm run pack:check
 | `--timeout` | `60000` | OpenCode 响应超时（毫秒） |
 | `--token` | 空 | API Bearer Token |
 | `DSH_HOME` | `~/.dsh` | DSH 主目录 |
+
+
+## 路线图
+
+- 发布到 npm
+- 集成 DSH 主 Web UI
+- 完整 tool-call 协议支持
+- 更多模型发现来源
