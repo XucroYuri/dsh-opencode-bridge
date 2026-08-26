@@ -1,7 +1,7 @@
 // Native DSH Cordis plugin for the experimental OpenCode bridge.
 // Provides lifecycle commands and an OpenAI-compatible proxy so DSH's
 // llm-pi-ai can use OpenCode as a provider without a custom LlmAdapter.
-import { readFileSync, writeFileSync, unlinkSync, existsSync, mkdirSync, openSync } from 'node:fs'
+import { readFileSync, writeFileSync, unlinkSync, existsSync, mkdirSync, openSync, readdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -35,27 +35,37 @@ function isRunning(pid) {
   }
 }
 
+function findWindowsUserDir() {
+  const root = '/mnt/c/Users'
+  try {
+    for (const name of readdirSync(root)) {
+      const base = join(root, name)
+      if (existsSync(join(base, '.config/opencode')) || existsSync(join(base, 'AppData'))) return base
+    }
+  } catch {}
+  return '/mnt/c/Users'
+}
+
 async function ensureServer(port) {
-  const p = pidPath()
-  if (existsSync(p)) {
-    const pid = Number(readFileSync(p, 'utf8').trim())
-    if (Number.isInteger(pid) && isRunning(pid)) return true
-  }
-  mkdirSync(join(p, '..'), { recursive: true })
-  const log = openSync(logPath(), 'a')
-  const child = spawn('opencode', ['serve', '--hostname', '127.0.0.1', '--port', String(port)], {
-    detached: true,
-    stdio: ['ignore', log, log],
-  })
-  child.unref()
-  writeFileSync(p, String(child.pid), 'utf8')
-  const deadline = Date.now() + 5000
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/api/health`)
+    if (res.ok) return true
+  } catch {}
+
+  const userDir = findWindowsUserDir()
+  const winUser = userDir.replace('/mnt/c/', 'C:\\').replaceAll('/', '\\')
+  const cmd = `cd /d ${winUser} && start /b opencode serve --hostname 127.0.0.1 --port ${port} > ${winUser}\\.dsh-opencode-bridge.log 2>&1`
+  try {
+    spawn('cmd.exe', ['/c', cmd], { cwd: userDir, detached: true, stdio: 'ignore' }).unref()
+  } catch {}
+
+  const deadline = Date.now() + 8000
   while (Date.now() < deadline) {
     try {
       const res = await fetch(`http://127.0.0.1:${port}/api/health`)
       if (res.ok) return true
     } catch {}
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 200)
+    await new Promise(r => setTimeout(r, 300))
   }
   return false
 }
@@ -102,15 +112,17 @@ async function opencodeAsk(opencodePort, prompt, modelRef) {
     throw new Error(`failed to send prompt: ${JSON.stringify(sent.data)}`)
   }
   const userId = sent.data?.data?.id
+  const userTime = sent.data?.data?.timeCreated ?? Date.now()
 
   const deadline = Date.now() + 60000
   while (Date.now() < deadline) {
     const msgs = await awaitFetch(`${base}/api/session/${sessionId}/message?limit=30`)
     const list = msgs.data?.data ?? []
-    const userIdx = list.findIndex(m => m.id === userId)
-    const assistant = userIdx >= 0
-      ? list.slice(userIdx + 1).find(m => m.type === 'assistant' && m.finish)
-      : undefined
+    const assistant = list.find(m =>
+      m.type === 'assistant' &&
+      m.finish &&
+      (m.time?.created ?? 0) >= (userTime - 1000)
+    )
     if (assistant) {
       const text = (assistant.content ?? [])
         .filter(c => c.type === 'text')
@@ -249,26 +261,12 @@ export async function apply(ctx) {
     if (command === 'serve') {
       const portIdx = args.indexOf('--port')
       const port = portIdx >= 0 && args[portIdx+1] ? Number(args[portIdx+1]) : 4096
-      const p = pidPath()
-      if (existsSync(p)) {
-        const pid = Number(readFileSync(p, 'utf8').trim())
-        if (Number.isInteger(pid) && isRunning(pid)) {
-          console.log(`bridge already running (pid ${pid})`)
-          finish(0); return
-        }
-        unlinkSync(p)
+      if (await ensureServer(port)) {
+        console.log(`bridge is running on port ${port}`)
+        finish(0); return
       }
-      mkdirSync(join(p, '..'), { recursive: true })
-      const log = openSync(logPath(), 'a')
-      const child = spawn('opencode', ['serve', '--hostname', '127.0.0.1', '--port', String(port)], {
-        detached: true,
-        stdio: ['ignore', log, log],
-      })
-      child.unref()
-      writeFileSync(p, String(child.pid), 'utf8')
-      console.log(`bridge started (pid ${child.pid}, port ${port})`)
-      console.log(`log: ${logPath()}`)
-      finish(0); return
+      console.error('bridge failed to start')
+      finish(1); return
     }
 
     if (command === 'proxy') {

@@ -2,7 +2,7 @@
 // Standalone OpenAI-compatible proxy that translates Chat Completions requests
 // into OpenCode session/prompt API calls.
 import { createServer } from 'node:http'
-import { readFileSync, writeFileSync, existsSync, mkdirSync, openSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync, mkdirSync, openSync, readdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { spawn } from 'node:child_process'
@@ -24,27 +24,41 @@ function isRunning(pid) {
   try { process.kill(pid, 0); return true } catch { return false }
 }
 
+function findWindowsUserDir() {
+  const root = '/mnt/c/Users'
+  try {
+    for (const name of readdirSync(root)) {
+      const base = join(root, name)
+      if (existsSync(join(base, '.config/opencode')) || existsSync(join(base, 'AppData'))) return base
+    }
+  } catch {}
+  return '/mnt/c/Users'
+}
+
 async function ensureOpenCodeServer(port) {
-  const p = pidPath()
-  if (existsSync(p)) {
-    const pid = Number(readFileSync(p, 'utf8').trim())
-    if (Number.isInteger(pid) && isRunning(pid)) return true
-  }
-  mkdirSync(join(p, '..'), { recursive: true })
-  const log = openSync(logPath(), 'a')
-  const child = spawn('opencode', ['serve', '--hostname', '127.0.0.1', '--port', String(port)], {
-    detached: true,
-    stdio: ['ignore', log, log],
-  })
-  child.unref()
-  writeFileSync(p, String(child.pid), 'utf8')
-  const deadline = Date.now() + 5000
+  // Health first: a native Windows server may already be running without our pid file.
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/api/health`)
+    if (res.ok) return true
+  } catch {}
+
+  // Start OpenCode as a native Windows process via cmd.exe. This avoids the
+  // WSL agent-execution issue observed when spawning the .exe directly.
+  const userDir = findWindowsUserDir()
+  const winUser = userDir.replace('/mnt/c/', 'C:\\').replaceAll('/', '\\')
+  const log = join(userDir, '.dsh-opencode-bridge.log')
+  const cmd = `cd /d ${winUser} && start /b opencode serve --hostname 127.0.0.1 --port ${port} > ${winUser}\\.dsh-opencode-bridge.log 2>&1`
+  try {
+    spawn('cmd.exe', ['/c', cmd], { cwd: userDir, detached: true, stdio: 'ignore' }).unref()
+  } catch {}
+
+  const deadline = Date.now() + 8000
   while (Date.now() < deadline) {
     try {
       const res = await fetch(`http://127.0.0.1:${port}/api/health`)
       if (res.ok) return true
     } catch {}
-    await new Promise(r => setTimeout(r, 200))
+    await new Promise(r => setTimeout(r, 300))
   }
   return false
 }
@@ -75,21 +89,26 @@ async function opencodeAsk(opencodePort, prompt, modelRef) {
       })
     }
   }
+  console.error(`[proxy] session=${sessionId} model=${modelRef} prompt=${JSON.stringify(prompt).slice(0,100)}`)
   const sent = await awaitFetch(`${base}/api/session/${sessionId}/prompt`, {
     method: 'POST', headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ prompt: { text: prompt } }),
   })
   if (sent.status !== 200) throw new Error(`failed to send prompt: ${JSON.stringify(sent.data)}`)
   const userId = sent.data?.data?.id
+  const userTime = sent.data?.data?.timeCreated ?? Date.now()
   const deadline = Date.now() + 60000
   while (Date.now() < deadline) {
     const msgs = await awaitFetch(`${base}/api/session/${sessionId}/message?limit=30`)
     const list = msgs.data?.data ?? []
-    const userIdx = list.findIndex(m => m.id === userId)
-    const assistant = userIdx >= 0 ? list.slice(userIdx + 1).find(m => m.type === 'assistant' && m.finish) : undefined
+    const assistant = list.find(m =>
+      m.type === 'assistant' &&
+      m.finish &&
+      (m.time?.created ?? 0) >= (userTime - 1000)
+    )
     if (assistant) {
       const text = (assistant.content ?? []).filter(c => c.type === 'text').map(c => c.text).join('\n')
-      if (text) return text
+      if (text) { console.error(`[proxy] assistant found`); return text }
     }
     await new Promise(r => setTimeout(r, 1000))
   }
