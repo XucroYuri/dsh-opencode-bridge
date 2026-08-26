@@ -66,6 +66,8 @@ PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py' -v
 - [CHANGELOG.md](CHANGELOG.md)
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [SECURITY.md](SECURITY.md)
+- [AUTHORS.md](AUTHORS.md)
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 ## Testing
 

@@ -72,6 +72,8 @@ MIT
 - [CHANGELOG.md](CHANGELOG.md)
 - [CONTRIBUTING.zh.md](CONTRIBUTING.zh.md)
 - [SECURITY.zh.md](SECURITY.zh.md)
+- [AUTHORS.md](AUTHORS.md)
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 
 ## 测试
